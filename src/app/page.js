@@ -367,7 +367,7 @@ function Projects() {
     {
       number: "Organisasi",
       title: "Batik One Society",
-      desc: "Batik One Society adalah sebuah organisasi yang berada di SMA Batik 1 Surakarta yang biasanya menjadi suporter saat ada sebuah perlombaan,disini saya dipercaya sebagai anggota.",
+      desc: "Batik One Society adalah sebuah organisasi yang berada di SMA Batik 1 Surakarta yang biasanya menjadi suporter saat ada sebuah perlombaan, disini saya dipercaya sebagai anggota.",
     },
     {
       number:"Organisasi",
@@ -382,7 +382,7 @@ function Projects() {
     {
       number:"Organisasi",
       title:"NOTS Esport",
-      desc:"NOTS Esport adalah sebuah organisasi yang bergerak di bidang esport,disini saya sebagai member atau anggota di divisi delta force warfare,disini saya bermain dengan role medic dan assault."
+      desc:"NOTS Esport adalah sebuah organisasi yang bergerak di bidang esport,disini saya sebagai member atau anggota di divisi delta force warfare, disini saya bermain dengan role medic dan assault."
     },
   ];
 
