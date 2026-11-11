@@ -237,7 +237,7 @@ function About() {
 
         <div className="animate-on-scroll animate-delay-1" style={{ marginTop: '40px' }}>
           <p className="section-description" style={{ margin: '0 auto' }}>
-            Perkenalkan nama saya Egga Maheza, bisa dipanggil Egga saya saat ini sedang berkuliah di Universitas Muhammadiyah Surakarta jurusan Teknik Informatika angkatan 2025.Saya memiliki minat di bidang teknologi dan saat ini sedang belajar framework Next.js dan Laravel.Saya saat ini juga mengikuti organisasi di kampus saya yaitu Himpunan Mahasiswa Teknik Informatika UMS. 
+            Perkenalkan nama saya Egga Maheza, bisa dipanggil Egga saya saat ini sedang berkuliah di Universitas Muhammadiyah Surakarta jurusan Teknik Informatika angkatan 2025. Saya memiliki minat di bidang teknologi dan saat ini sedang belajar framework Next.js dan Laravel. Saya juga memiliki menonton film dan menonton sepakbola. 
           </p>
         </div>
       </div>
@@ -316,6 +316,16 @@ function Skill(){
       title: "React Js",
       desc: "Intermediate",
     },
+    {
+      number:"",
+      title: "Next.Js",
+      desc: "beginner",
+    },
+    {
+      number: "",
+      title: "laravel",
+      desc: "beginner",
+    }
   ];
 
    return (
