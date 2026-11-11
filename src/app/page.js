@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 
 /* ─── SVG Icon Components ─── */
 function ArrowRight() {
@@ -65,6 +65,42 @@ function InstagramIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor">
       <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z" />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  );
+}
+
+function SendIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <line x1="22" y1="2" x2="11" y2="13" />
+      <polygon points="22 2 15 22 11 13 2 9 22 2" />
     </svg>
   );
 }
@@ -416,10 +452,203 @@ function Projects() {
 }
 
 /* ═══════════════════════════════════════
+   Email Modal / Pop-up
+   ═══════════════════════════════════════ */
+function EmailModal({ isOpen, onClose }) {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const modalRef = useRef(null);
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    if (isOpen) {
+      document.addEventListener("keydown", handleEsc);
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      document.removeEventListener("keydown", handleEsc);
+      document.body.style.overflow = "";
+    };
+  }, [isOpen, onClose]);
+
+  // Close on backdrop click
+  const handleBackdropClick = (e) => {
+    if (e.target === modalRef.current) onClose();
+  };
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    if (errorMessage) setErrorMessage("");
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSending(true);
+    setErrorMessage("");
+
+    try {
+      const res = await fetch("/api/send-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        throw new Error(result.error || "Gagal mengirim pesan.");
+      }
+
+      setSent(true);
+      setTimeout(() => {
+        setSent(false);
+        setFormData({ name: "", email: "", subject: "", message: "" });
+        onClose();
+      }, 2000);
+    } catch (err) {
+      console.error(err);
+      setErrorMessage(err.message || "Terjadi kesalahan saat mengirim pesan.");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="email-modal-backdrop" ref={modalRef} onClick={handleBackdropClick}>
+      <div className={`email-modal ${isOpen ? "open" : ""}`}>
+        {/* Header */}
+        <div className="email-modal-header">
+          <div className="email-modal-header-left">
+            <span className="email-modal-sparkle">✦</span>
+            <h3 className="email-modal-title">Kirim Pesan</h3>
+          </div>
+          <button className="email-modal-close" onClick={onClose} aria-label="Close">
+            <CloseIcon />
+          </button>
+        </div>
+
+        {/* To field */}
+        <div className="email-modal-field-row">
+          <span className="email-modal-field-label">Kepada:</span>
+          <div className="email-modal-recipient">
+            <span className="email-modal-recipient-tag">
+              eggamaheza@gmail.com
+              <span className="email-modal-recipient-x">×</span>
+            </span>
+          </div>
+        </div>
+
+        <div className="email-modal-divider" />
+
+        {/* Form */}
+        <form className="email-modal-form" onSubmit={handleSubmit}>
+          <div className="email-modal-form-grid">
+            <div className="email-modal-input-group">
+              <label htmlFor="email-name">Nama Anda</label>
+              <input
+                id="email-name"
+                name="name"
+                type="text"
+                placeholder="Masukkan nama Anda"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="email-modal-input-group">
+              <label htmlFor="email-from">Email Anda</label>
+              <input
+                id="email-from"
+                name="email"
+                type="email"
+                placeholder="nama@email.com"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="email-modal-input-group">
+            <label htmlFor="email-subject">Subjek</label>
+            <input
+              id="email-subject"
+              name="subject"
+              type="text"
+              placeholder="Tentang apa pesan ini?"
+              value={formData.subject}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="email-modal-input-group">
+            <label htmlFor="email-message">Pesan</label>
+            <textarea
+              id="email-message"
+              name="message"
+              placeholder="Tulis pesan Anda di sini..."
+              rows="5"
+              value={formData.message}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {errorMessage && (
+            <div style={{ color: "#e53e3e", fontSize: "0.85rem", padding: "8px 12px", background: "#fff5f5", borderRadius: "8px", border: "1px solid #feb2b2" }}>
+              ⚠️ {errorMessage}
+            </div>
+          )}
+
+          <div className="email-modal-footer">
+            <button type="button" className="email-modal-btn-cancel" onClick={onClose}>
+              Batal
+            </button>
+            <button
+              type="submit"
+              className={`email-modal-btn-send ${sent ? "sent" : ""}`}
+              disabled={sending}
+            >
+              {sent ? (
+                "✓ Terkirim!"
+              ) : sending ? (
+                "Mengirim..."
+              ) : (
+                <>
+                  <SendIcon />
+                  Kirim Pesan
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════
    Contact Section
    ═══════════════════════════════════════ */
 function Contact() {
   const sectionRef = useScrollReveal();
+  const [emailOpen, setEmailOpen] = useState(false);
+  const closeEmail = useCallback(() => setEmailOpen(false), []);
 
   return (
     <section className="contact" id="kontak" ref={sectionRef}>
@@ -450,13 +679,14 @@ function Contact() {
           >
             <LinkedInIcon />
           </a>
-          <a
-            href="mailto:eggamaheza@gmail.com"
+          <button
+            onClick={() => setEmailOpen(true)}
             className="contact-icon"
             aria-label="Email"
+            type="button"
           >
             <EmailIcon />
-          </a>
+          </button>
           <a
             href="https://wa.me/+6287820775262"
             target="_blank"
@@ -477,6 +707,9 @@ function Contact() {
           </a>
         </div>
       </div>
+
+      {/* Email Pop-up */}
+      <EmailModal isOpen={emailOpen} onClose={closeEmail} />
     </section>
   );
 }
